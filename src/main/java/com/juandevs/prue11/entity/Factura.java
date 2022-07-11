@@ -30,4 +30,6 @@ public class Factura {
     private String direccionEntrega;
     @Column(name = "total")
     private float total;
+    @Column(name = "idCliente")
+    private String idCliente;
 }
