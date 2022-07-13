@@ -1,10 +1,7 @@
 package com.juandevs.prue11.controller;
 
 
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -50,14 +47,14 @@ public class ClienteController {
     }
 
     @RequestMapping(value = "/update/{id}", method = RequestMethod.PUT)
-    public ResponseEntity<?> update(@RequestBody Cliente userDetail, @PathVariable String id){
+    public ResponseEntity<?> update(@RequestBody Cliente clienteDetail, @PathVariable String id){
         Optional<Cliente> user = clienteServices.findById(id);
 
         if(!user.isPresent()) return ResponseEntity.notFound().build();
     
-        user.get().setNombres(userDetail.getNombres());
-        user.get().setApellidos(userDetail.getApellidos());
-        user.get().setCorreo(userDetail.getCorreo());
+        user.get().setNombres(clienteDetail.getNombres());
+        user.get().setApellidos(clienteDetail.getApellidos());
+        user.get().setCorreo(clienteDetail.getCorreo());
         
         return ResponseEntity.status(HttpStatus.CREATED).body(clienteServices.save(user.get()));
     }

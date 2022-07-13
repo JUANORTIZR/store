@@ -16,39 +16,38 @@ import com.juandevs.prue11.service.interfaces.IClienteService;
 public class ClienteServiceImpl implements IClienteService{
 
     @Autowired
-    private ClienteRepository userRepository;
+    private ClienteRepository clienteRepository;
 
 
     @Override
     @Transactional(readOnly = true)
     public Iterable<Cliente> findAll() {
-        return userRepository.findAll();
+        return clienteRepository.findAll();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Page<Cliente> findAll(Pageable pageable) {
-        
-        return userRepository.findAll(pageable);
+    public Page<Cliente> findAll(Pageable pageable) {     
+        return clienteRepository.findAll(pageable);
     }
 
     @Override
     @Transactional(readOnly = true)
     public Optional<Cliente> findById(String id) {
         
-        return userRepository.findById(id);
+        return clienteRepository.findById(id);
     }
 
     @Override
     @Transactional
     public Cliente save(Cliente cliente) {
-        return userRepository.save(cliente);
+        return clienteRepository.save(cliente);
     }
 
     @Override
     @Transactional
     public void deleteById(String id) {
-        userRepository.deleteById(id);
+        clienteRepository.deleteById(id);
     }
     
 }

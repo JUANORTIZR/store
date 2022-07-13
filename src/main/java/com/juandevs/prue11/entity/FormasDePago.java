@@ -11,15 +11,16 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name = "telefonos")
+@Table(name = "formasDePago")
 @Getter
 @Setter
-public class Telefono {
+public class FormasDePago {
+    
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @Column(name = "numero")
-    private String numero;
+    @Column(name = "formaDePago")
+    private String formaDePago;
     
 }

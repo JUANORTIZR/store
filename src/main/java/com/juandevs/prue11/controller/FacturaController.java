@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.juandevs.prue11.entity.Factura;
@@ -24,7 +23,7 @@ public class FacturaController {
     @Autowired
     private FacturaServiceImpl facturaService;
 
-    @RequestMapping(value = "save", method = RequestMethod.POST)
+    @RequestMapping(value = "/save", method = RequestMethod.POST)
     public ResponseEntity<?> save(@RequestBody Factura factura) {
         return ResponseEntity.status(HttpStatus.OK).body(facturaService.save(factura));
     }
@@ -37,5 +36,15 @@ public class FacturaController {
     @RequestMapping(value = "/findById/{id}", method = RequestMethod.GET)
     public Optional<Factura> findById(@PathVariable int id){
         return facturaService.findById(id);
+    }
+
+    @RequestMapping(value = "/update/{id}", method = RequestMethod.PUT)
+    public ResponseEntity<?> update(@RequestBody String estado, @PathVariable int id){
+        Optional<Factura> factura = facturaService.findById(id);
+        if(!factura.isPresent()) return ResponseEntity.notFound().build();
+
+        factura.get().setEstado( estado);
+        return ResponseEntity.status(HttpStatus.OK).body(facturaService.save(factura.get()));
+
     }
 }
