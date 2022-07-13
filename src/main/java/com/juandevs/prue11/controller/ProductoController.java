@@ -33,13 +33,14 @@ public class ProductoController {
     }
 
     @RequestMapping(value = "/findById/{id}", method = RequestMethod.GET)
-    public Optional<Producto> findById(@PathVariable int id) {
-        return productoService.findById(id);
+    public ResponseEntity<?> findById(@PathVariable int id) {
+        return ResponseEntity.status(HttpStatus.OK).body(productoService.findById(id));
+
     }
 
     @RequestMapping(value = "/update/{id}", method = RequestMethod.PUT)
     public ResponseEntity<?> update(@RequestBody Producto productoDetail, @PathVariable int id) {
-        Optional<Producto> producto = productoService.findById(id);
+        Optional<Producto> producto = productoService.findById(id).getObject();
         if (!producto.isPresent())
             return ResponseEntity.notFound().build();
 
@@ -53,7 +54,7 @@ public class ProductoController {
 
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.DELETE)
     public ResponseEntity<?> delete(@PathVariable int id) {
-        Optional<Producto> producto = productoService.findById(id);
+        Optional<Producto> producto = productoService.findById(id).getObject();
 
         if(!producto.isPresent()) return ResponseEntity.notFound().header("Usuario eliminado","No encontrado").build();
 

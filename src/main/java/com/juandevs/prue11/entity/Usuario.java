@@ -26,4 +26,6 @@ public class Usuario {
     @ManyToMany
     @JoinColumn(name = "idUsuario")
     private List<Rol> roles;
+    @Column(name = "activo")
+    private boolean activo;
 }

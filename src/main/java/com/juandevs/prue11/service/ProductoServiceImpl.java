@@ -5,8 +5,6 @@ import java.util.Optional;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties.Pageable;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import com.juandevs.prue11.entity.Producto;
@@ -25,51 +23,80 @@ public class ProductoServiceImpl implements IProductoService{
 
     @Override
     @Transactional
-    public Iterable<Producto> findAll() {
-        return productoRepository.findAll();
+    public Response<Iterable<Producto>> findAll() {
+        try {
+            return new Response<Iterable<Producto>>("Consulta realizada con exito", true, productoRepository.findAll());
+        } catch (Exception e) {
+            return new Response<Iterable<Producto>>(e.getMessage(), false, null);
+        }
+        
     }
 
+    
     @Override
-    public Page<Producto> findAll(Pageable pageable) {
-        return null;
-    }
+    public Response<Optional<Producto>> findById(int id) {
+        try {
+            Optional<Producto> producto = productoRepository.findById(id);
 
-    @Override
-    public Optional<Producto> findById(int id) {
-        return productoRepository.findById(id);
+            if(!producto.isPresent()) return new Response<Optional<Producto>>("Producto no encontrado",false,producto);
+        
+            return new Response<Optional<Producto>>("Producto encontrado",false,producto);
+        } catch (Exception e) {
+            return new Response<Optional<Producto>>(e.getMessage(),false,null);
+        }
+        
     }
 
     @Override
     public Response<Producto> save(Producto producto) {
-           
-        if(producto == null) {
-            return response = new Response<Producto>("Los datos son nulos", false, producto);
+        
+        try {
+            if(producto == null) {
+                return response = new Response<Producto>("Los datos son nulos", false, producto);
+            }
+    
+            if(productoRepository.findById(producto.getId()).isPresent()) {
+                return response = new Response<Producto>("El producto ya se encuentra registrado", false, producto);
+            }
+    
+            return response = new Response<Producto>("Producto guardado", true, productoRepository.save(producto));
+        } catch (Exception e) {
+            return response = new Response<Producto>(e.getMessage(), false, producto);
         }
-
-        if(productoRepository.findById(producto.getId()).isPresent()) {
-            return response = new Response<Producto>("El producto ya se encuentra registrado", false, producto);
-        }
-
-        return response = new Response<Producto>("Producto guardado", true, productoRepository.save(producto));
+        
     }
 
     @Override
     public Response<Producto> update(Producto producto) {
            
-        if(producto == null) {
-            return response = new Response<Producto>("Los datos son nulos", false, producto);
+        try {
+            if(producto == null) {
+                return response = new Response<Producto>("Los datos son nulos", false, producto);
+            }
+    
+            if(!productoRepository.findById(producto.getId()).isPresent()) {
+                return response = new Response<Producto>("El producto no se encuentra registrado", false, producto);
+            }
+    
+            return response = new Response<Producto>("Producto actualizado", true, productoRepository.save(producto));
+        } catch (Exception e) {
+            return response = new Response<Producto>(e.getMessage(), true, producto);
         }
-
-        if(!productoRepository.findById(producto.getId()).isPresent()) {
-            return response = new Response<Producto>("El producto no se encuentra registrado", false, producto);
-        }
-
-        return response = new Response<Producto>("Producto actualizado", true, productoRepository.save(producto));
+        
     }
 
     @Override
-    public void deleteById(int id) {
-        productoRepository.deleteById(id);
+    public Response<Optional<Producto>> deleteById(int id) {
+        try {
+            Optional<Producto> producto = productoRepository.findById(id);
+
+            if(!producto.isPresent()) return new Response<Optional<Producto>>("Producto no encontrado",false,producto);
+            
+            productoRepository.findById(id);
+            return new Response<Optional<Producto>>("Producto eliminado",false,producto);
+        } catch (Exception e) {
+            return new Response<Optional<Producto>>(e.getMessage(),false,null);
+        }
     }
     
 }
