@@ -2,21 +2,20 @@ package com.juandevs.prue11.service.interfaces;
 
 import java.util.Optional;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 import com.juandevs.prue11.entity.Cliente;
+import com.juandevs.prue11.request.Response;
 
 public interface IClienteService {
     
-    public Iterable<Cliente> findAll();
+    public Response<Iterable<Cliente>> findAll();
 
-    public Page<Cliente> findAll(Pageable pageable);
+    public Response<Optional<Cliente>> findById(String id);
 
-    public Optional<Cliente> findById(String id);
+    public Response<Cliente> save(Cliente cliente);
 
-    public Cliente save(Cliente cliente);
-
-    public void deleteById(String id);
+    public Response deleteById(String id);
+    
+    public Response<Cliente> update(Cliente cliente);
 
 }

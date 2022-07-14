@@ -9,7 +9,6 @@ import com.juandevs.prue11.request.Response;
 public interface IProductoService {
     public Response<Iterable<Producto>> findAll();
 
-
     public Response<Optional<Producto>> findById(int id);
 
     public Response<Producto> save(Producto producto);

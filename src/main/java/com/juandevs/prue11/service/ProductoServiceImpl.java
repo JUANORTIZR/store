@@ -92,7 +92,7 @@ public class ProductoServiceImpl implements IProductoService{
 
             if(!producto.isPresent()) return new Response<Optional<Producto>>("Producto no encontrado",false,producto);
             
-            productoRepository.findById(id);
+            productoRepository.deleteById(id);
             return new Response<Optional<Producto>>("Producto eliminado",false,producto);
         } catch (Exception e) {
             return new Response<Optional<Producto>>(e.getMessage(),false,null);

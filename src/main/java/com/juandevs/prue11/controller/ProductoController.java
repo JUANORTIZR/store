@@ -62,9 +62,9 @@ public class ProductoController {
 
         if(!producto.isPresent()) return ResponseEntity.notFound().header("Usuario eliminado","No encontrado").build();
 
-        productoService.deleteById(id);
+        var response = productoService.deleteById(id);
 
-        return ResponseEntity.ok().header("Usuario eliminado","Correcto").build();
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
 }

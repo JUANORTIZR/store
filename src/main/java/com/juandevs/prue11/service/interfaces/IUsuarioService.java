@@ -2,7 +2,6 @@ package com.juandevs.prue11.service.interfaces;
 
 import java.util.Optional;
 
-
 import com.juandevs.prue11.entity.Usuario;
 
 public interface IUsuarioService {
