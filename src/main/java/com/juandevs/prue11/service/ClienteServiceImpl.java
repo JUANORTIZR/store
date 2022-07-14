@@ -3,8 +3,7 @@ package com.juandevs.prue11.service;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,8 +26,7 @@ public class ClienteServiceImpl implements IClienteService{
             return new Response<Iterable<Cliente>>("Consulta realizada con exito", true, clienteRepository.findAll());
         } catch (Exception e) {
             return new Response<Iterable<Cliente>>(e.getMessage(), false, null);
-        }
-        
+        } 
     }
 
 
@@ -85,7 +83,7 @@ public class ClienteServiceImpl implements IClienteService{
 
     @Override
     @Transactional
-    public Response deleteById(String id) {
+    public Response<Optional<Cliente>> deleteById(String id) {
         try {
             Optional<Cliente> cliente = clienteRepository.findById(id);
 

@@ -2,22 +2,20 @@ package com.juandevs.prue11.service.interfaces;
 
 import java.util.Optional;
 
-import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties.Pageable;
-import org.springframework.data.domain.Page;
 
 import com.juandevs.prue11.entity.Factura;
+import com.juandevs.prue11.request.Response;
 
 public interface IFacturaService {
 
-    public Iterable<Factura> findAll();
+    public Response<Iterable<Factura>> findAll();
 
-    public Iterable<Factura> findByIdCliente(int id);
+    public Response<Iterable<Factura>> findByIdCliente(String id);
 
-    public Page<Factura> findAll(Pageable pageable);
+    public Response<Optional<Factura>> findById(int id);
 
-    public Optional<Factura> findById(int id);
+    public Response<Factura> save(Factura factura);
 
-    public Factura save(Factura factura);
+    public Response<Factura> update(Factura factura);
 
-    public void deleteById(int id);
 }

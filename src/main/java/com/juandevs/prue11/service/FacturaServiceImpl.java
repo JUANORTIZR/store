@@ -3,48 +3,84 @@ package com.juandevs.prue11.service;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties.Pageable;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.juandevs.prue11.entity.Factura;
 import com.juandevs.prue11.repository.FacturaRepository;
+import com.juandevs.prue11.request.Response;
 import com.juandevs.prue11.service.interfaces.IFacturaService;
 
 @Service
-public class FacturaServiceImpl implements IFacturaService{
+public class FacturaServiceImpl implements IFacturaService {
 
     @Autowired
     private FacturaRepository facturaRepository;
 
     @Override
-    public Iterable<Factura> findAll() {
-        return facturaRepository.findAll();
+    @Transactional(readOnly = true)
+    public Response<Iterable<Factura>> findAll() {
+        try {
+            return new Response<Iterable<Factura>>("Consulta realizada con exito", true, facturaRepository.findAll());
+        } catch (Exception e) {
+            return new Response<Iterable<Factura>>(e.getMessage(), false, null);
+        }
+
     }
 
     @Override
-    public Iterable<Factura> findByIdCliente(int id) {
+    @Transactional(readOnly = true)
+    public Response<Iterable<Factura>> findByIdCliente(String id) {
         return null;
     }
 
     @Override
-    public Page<Factura> findAll(Pageable pageable) {
-        return null;
+    public Response<Optional<Factura>> findById(int id) {
+        try {
+            Optional<Factura> factura = facturaRepository.findById(id);
+
+            if (!factura.isPresent())
+                return new Response<Optional<Factura>>("Factura no encontrado", false, factura);
+
+            return new Response<Optional<Factura>>("Factura encontrada", false, factura);
+        } catch (Exception e) {
+            return new Response<Optional<Factura>>(e.getMessage(), false, null);
+        }
     }
 
     @Override
-    public Optional<Factura> findById(int id) {
-        return facturaRepository.findById(id);
+    public Response<Factura> save(Factura factura) {
+        try {
+            if (factura == null) {
+                return new Response<Factura>("Los datos son nulos", false, factura);
+            }
+
+            if (facturaRepository.findById(factura.getId()).isPresent()) {
+                return new Response<Factura>("La factura ya se encuentra registrada", false, factura);
+            }
+
+            return new Response<Factura>("Factura guardado", true, facturaRepository.save(factura));
+        } catch (Exception e) {
+            return new Response<Factura>(e.getMessage(), false, factura);
+        }
     }
 
     @Override
-    public Factura save(Factura factura) {
-        return facturaRepository.save(factura);
+    public Response<Factura> update(Factura factura) {
+        try {
+            if (factura == null) {
+                return new Response<Factura>("Los datos son nulos", false, factura);
+            }
+
+            if (!facturaRepository.findById(factura.getId()).isPresent()) {
+                return new Response<Factura>("la factura no se encuentra registrada", false, factura);
+            }
+
+            return new Response<Factura>("Factura actualizada", true, facturaRepository.save(factura));
+        } catch (Exception e) {
+            return new Response<Factura>(e.getMessage(), true, factura);
+        }
+
     }
 
-    @Override
-    public void deleteById(int id) {
-        facturaRepository.deleteById(id);
-    }
-    
 }

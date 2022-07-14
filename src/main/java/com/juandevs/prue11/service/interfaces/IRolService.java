@@ -3,13 +3,16 @@ package com.juandevs.prue11.service.interfaces;
 import java.util.Optional;
 
 import com.juandevs.prue11.entity.Rol;
+import com.juandevs.prue11.request.Response;
 
 public interface IRolService {
-    public Iterable<Rol> findAll();
+    public Response<Iterable<Rol>> findAll();
 
-    public Optional<Rol> findById(int id);
+    public Response<Optional<Rol>> findById(int id);
 
-    public Rol save(Rol rol);
+    public Response<Rol> save(Rol rol);
 
-    public void deleteById(int id);
+    public Response<Rol> update(Rol rol, int id);
+
+    public Response<Optional<Rol>> deleteById(int id);
 }

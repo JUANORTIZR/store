@@ -14,7 +14,7 @@ public interface IClienteService {
 
     public Response<Cliente> save(Cliente cliente);
 
-    public Response deleteById(String id);
+    public Response<Optional<Cliente>> deleteById(String id);
     
     public Response<Cliente> update(Cliente cliente);
 
