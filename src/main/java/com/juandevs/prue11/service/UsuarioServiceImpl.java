@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.juandevs.prue11.entity.Usuario;
 import com.juandevs.prue11.repository.UsuarioRepository;
+import com.juandevs.prue11.security.Encritar;
 import com.juandevs.prue11.service.interfaces.IUsuarioService;
 
 @Service
@@ -33,6 +34,7 @@ public class UsuarioServiceImpl implements IUsuarioService{
     @Override
     @Transactional
     public Usuario save(Usuario usuario) {
+        usuario.setClave(Encritar.getEncrypt(usuario.getClave()));
         return usuarioRepository.save(usuario);
     }
 

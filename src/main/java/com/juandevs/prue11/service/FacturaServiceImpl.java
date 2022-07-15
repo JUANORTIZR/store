@@ -25,13 +25,16 @@ public class FacturaServiceImpl implements IFacturaService {
         } catch (Exception e) {
             return new Response<Iterable<Factura>>(e.getMessage(), false, null);
         }
-
     }
 
     @Override
     @Transactional(readOnly = true)
     public Response<Iterable<Factura>> findByIdCliente(String id) {
-        return null;
+        try {
+            return new Response<Iterable<Factura>>("Consulta realizada con exito", true, facturaRepository.findAllByCliente(id));
+        } catch (Exception e) {
+            return new Response<Iterable<Factura>>(e.getMessage(), false, null);
+        }
     }
 
     @Override

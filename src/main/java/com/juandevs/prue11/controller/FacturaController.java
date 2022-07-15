@@ -29,12 +29,18 @@ public class FacturaController {
 
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     public ResponseEntity<?> save(@RequestBody Factura factura) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(facturaService.save(factura));
+        var response = facturaService.save(factura);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @RequestMapping(value = "/findAll", method = RequestMethod.GET)
     public ResponseEntity<?> findAll(){
         return ResponseEntity.status(HttpStatus.OK).body(facturaService.findAll());
+    }
+
+    @RequestMapping(value = "/findByCliente", method = RequestMethod.GET)
+    public ResponseEntity<?> findByCliente( @PathVariable String id){
+        return ResponseEntity.status(HttpStatus.OK).body(facturaService.findByIdCliente(id));
     }
 
     @RequestMapping(value = "/findById/{id}", method = RequestMethod.GET)
