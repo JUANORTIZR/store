@@ -12,4 +12,6 @@ public interface IUsuarioService {
     public Usuario save(Usuario usuario);
 
     public void deleteById(String nombreUsuario);
+
+    public Usuario verificarDatos(Usuario usuario);
 }

@@ -19,6 +19,7 @@ public class UsuarioServiceImpl implements IUsuarioService{
     private UsuarioRepository usuarioRepository;
     
 
+
     @Override
     @Transactional(readOnly = true)
     public Iterable<Usuario> findAll() {
@@ -42,6 +43,19 @@ public class UsuarioServiceImpl implements IUsuarioService{
     @Transactional
     public void deleteById(String nombreUsuario) {
         usuarioRepository.deleteById(nombreUsuario);
+    }
+
+    @Override
+    @Transactional
+    public Usuario verificarDatos(Usuario usuario) {
+        usuario.setClave(Encritar.getEncrypt(usuario.getClave()));
+
+        var usuarioComparar = usuarioRepository.findById(usuario.getNombreUsuario());
+        if(!usuarioComparar.isPresent()) return null;
+   
+        if(usuarioComparar.get().getClave().equals(usuario.getClave())) {return usuarioComparar.get();}
+
+        return null;
     }
     
 }
