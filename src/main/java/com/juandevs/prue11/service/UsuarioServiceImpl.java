@@ -50,10 +50,20 @@ public class UsuarioServiceImpl implements IUsuarioService{
     public Usuario verificarDatos(Usuario usuario) {
         usuario.setClave(Encritar.getEncrypt(usuario.getClave()));
 
-        var usuarioComparar = usuarioRepository.findById(usuario.getNombreUsuario());
-        if(!usuarioComparar.isPresent()) return null;
-   
-        if(usuarioComparar.get().getClave().equals(usuario.getClave())) {return usuarioComparar.get();}
+        var usuarios = usuarioRepository.findAll();
+        Usuario usuarioComparar = new Usuario();
+        for (Usuario usuarioi : usuarios) {
+            if(usuarioi.getNombreUsuario().equals(usuario.getNombreUsuario())){
+                usuarioComparar = usuarioi;
+            }
+        }
+
+        if(usuarioComparar == null) return null;
+        
+        if(usuarioComparar.getClave().equals(usuario.getClave())) {
+           
+            return usuarioComparar;
+        }
 
         return null;
     }

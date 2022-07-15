@@ -29,13 +29,15 @@ public class AuthController {
     private JWTUtil jwtUtil;
 
     @RequestMapping(value = "/api/login", method = RequestMethod.POST)
-    public Response<String> save(@RequestBody Usuario usuario){
+    public Response<Usuario> save(@RequestBody Usuario usuario){
+        
         var usuarioLoguear = usuarioService.verificarDatos(usuario);
         if(usuarioLoguear != null){
             String token = jwtUtil.create(usuarioLoguear.getNombreUsuario(), usuarioLoguear.getNombreUsuario());
-            return new Response<String>("Logueado", true, token);
+            usuarioLoguear.setClave("clave");
+            return new Response<Usuario>(token, true, usuarioLoguear);
         }
-        return new Response<String>("Logueado", true, "Datos incorrectos");
+        return new Response<Usuario>("Datos incorrectos", true, null);
     }
 
     

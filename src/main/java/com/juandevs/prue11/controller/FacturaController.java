@@ -41,9 +41,9 @@ public class FacturaController {
     }
 
     @RequestMapping(value = "/findAll", method = RequestMethod.GET)
-    public ResponseEntity<?> findAll(@RequestHeader(value = "Authorization") String token) {
-        String nombreUsuario = jwtUtil.getKey(token);
-        if(nombreUsuario == null) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response("token no valido", false, token));
+    public ResponseEntity<?> findAll() {
+        // String nombreUsuario = jwtUtil.getKey(token);
+        // if(nombreUsuario == null) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response("token no valido", false, token));
 
         return ResponseEntity.status(HttpStatus.OK).body(facturaService.findAll());
     }

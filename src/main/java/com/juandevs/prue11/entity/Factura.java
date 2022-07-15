@@ -38,9 +38,8 @@ public class Factura {
     private String direccionEntrega;
     @Column(name = "total")
     private float total;
-    @ManyToOne
-    @JoinColumn(name = "idCliente")
-    private Cliente cliente;
+    @Column(name = "idCliente")
+    private String cliente;
     @OneToMany(cascade = CascadeType.ALL, targetEntity = DetalleFactura.class)
     @JoinColumn(name = "idFactura", referencedColumnName = "id")
     private List<DetalleFactura> detallesDeFacturas;
