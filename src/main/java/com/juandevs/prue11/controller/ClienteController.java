@@ -1,6 +1,5 @@
 package com.juandevs.prue11.controller;
 
-
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,79 +16,67 @@ import org.springframework.web.bind.annotation.RestController;
 import com.juandevs.prue11.entity.Cliente;
 import com.juandevs.prue11.request.Response;
 import com.juandevs.prue11.service.ClienteServiceImpl;
-import com.juandevs.prue11.security.JWTUtil;
+
 
 @RestController
 
 @RequestMapping("/api/cliente")
-@CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT,
-    RequestMethod.DELETE})
-
+@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT,
+        RequestMethod.DELETE })
 
 public class ClienteController {
 
     @Autowired
     ClienteServiceImpl clienteService;
-    
-    @Autowired
-    private JWTUtil jwtUtil;
+
 
     @RequestMapping(value = "/findAll", method = RequestMethod.GET)
     public ResponseEntity<?> findAll(@RequestHeader(value = "Authorization") String token) {
-        String nombreUsuario = jwtUtil.getKey(token);
-        if(nombreUsuario == null) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response("token no valido", false, token));
+        
+        Response<Iterable<Cliente>> response = clienteService.findAll(token);
+        if (!response.isStatus())
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 
-        return ResponseEntity.status(HttpStatus.OK).body(clienteService.findAll());
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
-
 
     @RequestMapping(value = "/save", method = RequestMethod.POST)
-    public ResponseEntity<?> save(@RequestBody Cliente cliente,@RequestHeader(value = "Authorization") String token) {
-        String nombreUsuario = jwtUtil.getKey(token);
-        if(nombreUsuario == null) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response("token no valido", false, token));
+    public ResponseEntity<?> save(@RequestBody Cliente cliente, @RequestHeader(value = "Authorization") String token) {
+        
+        Response<Cliente> response = clienteService.save(cliente, token);
+        if (!response.isStatus())
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 
-        return  ResponseEntity.status(HttpStatus.CREATED).body(clienteService.save(cliente));
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-
     @RequestMapping(value = "/findById/{id}", method = RequestMethod.GET)
-    public ResponseEntity<?> findById(@PathVariable String id,@RequestHeader(value = "Authorization") String token) {
-        String nombreUsuario = jwtUtil.getKey(token);
-        if(nombreUsuario == null) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response("token no valido", false, token));
+    public ResponseEntity<?> findById(@PathVariable String id, @RequestHeader(value = "Authorization") String token) {        
+        Response<Optional<Cliente>> response = clienteService.findById(id, token);
+        if (!response.isStatus())
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 
-        return ResponseEntity.status(HttpStatus.OK).body(clienteService.findById(id));
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @RequestMapping(value = "/update/{id}", method = RequestMethod.PUT)
-    public ResponseEntity<?> update(@RequestBody Cliente clienteDetail, @PathVariable String id,@RequestHeader(value = "Authorization") String token){
-        String nombreUsuario = jwtUtil.getKey(token);
-        if(nombreUsuario == null) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response("token no valido", false, token));
+    public ResponseEntity<?> update(@RequestBody Cliente clienteDetail, @PathVariable String id, @RequestHeader(value = "Authorization") String token) {
+               
+        Response<Cliente> response = clienteService.update(clienteDetail, id, token);
+        if(!response.isStatus()) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 
-        Optional<Cliente> cliente = clienteService.findById(id).getObject();
-
-        if(!cliente.isPresent()) return ResponseEntity.notFound().build();
-     
-        cliente.get().setNombres(clienteDetail.getNombres());
-        cliente.get().setApellidos(clienteDetail.getApellidos());
-        cliente.get().setCorreo(clienteDetail.getCorreo());
-        
-        return ResponseEntity.status(HttpStatus.CREATED).body(clienteService.update(cliente.get()));
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.DELETE)
-    public ResponseEntity<?> delete(@PathVariable String id,@RequestHeader(value = "Authorization") String token){
-        String nombreUsuario = jwtUtil.getKey(token);
-        if(nombreUsuario == null) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response("token no valido", false, token));
-
-        Optional<Cliente> cliente = clienteService.findById(id).getObject();
-
-        if(!cliente.isPresent()) return ResponseEntity.notFound().header("Cliente eliminado","No encontrado").build();
-
-        var response = clienteService.deleteById(id);
+    public ResponseEntity<?> delete(@PathVariable String id, @RequestHeader(value = "Authorization") String token) {
+       
+        var response = clienteService.deleteById(id,token);
+        if (!response.isStatus())
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
-    
-    }
 
+    }
 
 }

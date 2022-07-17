@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.juandevs.prue11.entity.Producto;
 import com.juandevs.prue11.request.Response;
 import com.juandevs.prue11.service.ProductoServiceImpl;
-import com.juandevs.prue11.security.JWTUtil;
+
 
 @RestController
 @RequestMapping("/api/producto")
@@ -29,62 +29,52 @@ public class ProductoController {
     @Autowired
     private ProductoServiceImpl productoService;
 
-    @Autowired
-    private JWTUtil jwtUtil;
 
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     public ResponseEntity<?> save(@RequestBody Producto producto, @RequestHeader(value = "Authorization") String token) {
-        String nombreUsuario = jwtUtil.getKey(token);
-        if(nombreUsuario == null) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response("token no valido", false, token));
+        
+        Response<Producto> response = productoService.save(producto, token);
+        if(!response.isStatus()) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 
-        return ResponseEntity.status(HttpStatus.OK).body(productoService.save(producto));
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @RequestMapping(value = "/findAll", method = RequestMethod.GET)
     public ResponseEntity<?> findAll(@RequestHeader(value = "Authorization") String token) {
-        String nombreUsuario = jwtUtil.getKey(token);
-        if(nombreUsuario == null) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response("token no valido", false, token));
+        
+        Response<Iterable<Producto>> response = productoService.findAll(token);
 
-        return ResponseEntity.status(HttpStatus.OK).body(productoService.findAll());
+        if (!response.isStatus() ) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @RequestMapping(value = "/findById/{id}", method = RequestMethod.GET)
     public ResponseEntity<?> findById(@PathVariable int id,@RequestHeader(value = "Authorization") String token) {
-        String nombreUsuario = jwtUtil.getKey(token);
-        if(nombreUsuario == null) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response("token no valido", false, token));
+       
+        Response<Optional<Producto>> response = productoService.findById(id, token);
+        if(!response.isStatus()) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 
-        return ResponseEntity.status(HttpStatus.OK).body(productoService.findById(id));
+        return ResponseEntity.status(HttpStatus.OK).body(response);
 
     }
 
     @RequestMapping(value = "/update/{id}", method = RequestMethod.PUT)
     public ResponseEntity<?> update(@RequestBody Producto productoDetail, @PathVariable int id, @RequestHeader(value = "Authorization") String token) {
         
-        String nombreUsuario = jwtUtil.getKey(token);
-        if(nombreUsuario == null) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response("token no valido", false, token));
+        Response<Producto> response = productoService.update(productoDetail, id, token);
 
-        Optional<Producto> producto = productoService.findById(id).getObject();
-        if (!producto.isPresent())
-            return ResponseEntity.notFound().build();
+        if(!response.isStatus()) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 
-        producto.get().setIva(productoDetail.getIva());
-        producto.get().setDescripcion(productoDetail.getDescripcion());
-        producto.get().setPrecioUnitario(productoDetail.getPrecioUnitario());
-
-        return ResponseEntity.status(HttpStatus.OK).body(productoService.update(producto.get()));
+        return ResponseEntity.status(HttpStatus.OK).body(response);
 
     }
 
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.DELETE)
     public ResponseEntity<?> delete(@PathVariable int id, @RequestHeader(value = "Authorization") String token) {
-        String nombreUsuario = jwtUtil.getKey(token);
-        if(nombreUsuario == null) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response("token no valido", false, token));
-
-        Optional<Producto> producto = productoService.findById(id).getObject();
-
-        if(!producto.isPresent()) return ResponseEntity.notFound().header("Usuario eliminado","No encontrado").build();
-
-        var response = productoService.deleteById(id);
+        
+        Response<Optional<Producto>> response = productoService.deleteById(id, token);
+        if(!response.isStatus()) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }

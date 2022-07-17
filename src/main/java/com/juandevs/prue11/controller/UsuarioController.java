@@ -17,7 +17,7 @@ import com.juandevs.prue11.service.UsuarioServiceImpl;
 
 @RestController
 
-@CrossOrigin(origins = "http://localhost:4200", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT,
+@CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT,
     RequestMethod.DELETE})
 
 @RequestMapping("/api/usuario")

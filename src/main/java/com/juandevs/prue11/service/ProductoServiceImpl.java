@@ -11,92 +11,124 @@ import com.juandevs.prue11.entity.Producto;
 import com.juandevs.prue11.repository.ProductoRepository;
 import com.juandevs.prue11.request.Response;
 import com.juandevs.prue11.service.interfaces.IProductoService;
-
+import com.juandevs.prue11.security.JWTUtil;
 
 @Service
-public class ProductoServiceImpl implements IProductoService{
+public class ProductoServiceImpl implements IProductoService {
 
     Response<Producto> response;
 
     @Autowired
     private ProductoRepository productoRepository;
 
+    @Autowired
+    private JWTUtil jwtUtil;
+
     @Override
     @Transactional
-    public Response<Iterable<Producto>> findAll() {
+    public Response<Iterable<Producto>> findAll(String token) {
         try {
+            String nombreUsuario = jwtUtil.getKey(token);
+            if (nombreUsuario == null)
+                return new Response<Iterable<Producto>>("token no valido", false, null);
+
             return new Response<Iterable<Producto>>("Consulta realizada con exito", true, productoRepository.findAll());
         } catch (Exception e) {
             return new Response<Iterable<Producto>>(e.getMessage(), false, null);
         }
-        
+
     }
 
-    
     @Override
-    public Response<Optional<Producto>> findById(int id) {
+    public Response<Optional<Producto>> findById(int id, String token) {
         try {
+            String nombreUsuario = jwtUtil.getKey(token);
+            if (nombreUsuario == null)
+                return new Response<Optional<Producto>>("token no valido", false, null);
+
             Optional<Producto> producto = productoRepository.findById(id);
 
-            if(!producto.isPresent()) return new Response<Optional<Producto>>("Producto no encontrado",false,producto);
-        
-            return new Response<Optional<Producto>>("Producto encontrado",false,producto);
+            if (!producto.isPresent())
+                return new Response<Optional<Producto>>("Producto no encontrado", false, producto);
+
+            return new Response<Optional<Producto>>("Producto encontrado", false, producto);
         } catch (Exception e) {
-            return new Response<Optional<Producto>>(e.getMessage(),false,null);
+            return new Response<Optional<Producto>>(e.getMessage(), false, null);
         }
-        
+
     }
 
     @Override
-    public Response<Producto> save(Producto producto) {
-        
+    public Response<Producto> save(Producto producto, String token) {
+
         try {
-            if(producto == null) {
+
+            String nombreUsuario = jwtUtil.getKey(token);
+            if (nombreUsuario == null)
+                return new Response<Producto>("token no valido", false, null);
+
+            if (producto == null) {
                 return response = new Response<Producto>("Los datos son nulos", false, producto);
             }
-    
-            if(productoRepository.findById(producto.getId()).isPresent()) {
+
+            if (productoRepository.findById(producto.getId()).isPresent()) {
                 return response = new Response<Producto>("El producto ya se encuentra registrado", false, producto);
             }
-    
+
             return response = new Response<Producto>("Producto guardado", true, productoRepository.save(producto));
         } catch (Exception e) {
             return response = new Response<Producto>(e.getMessage(), false, producto);
         }
-        
+
     }
 
     @Override
-    public Response<Producto> update(Producto producto) {
-           
+    public Response<Producto> update(Producto productoDetail, int id, String token) {
+
         try {
-            if(producto == null) {
-                return response = new Response<Producto>("Los datos son nulos", false, producto);
+
+            String nombreUsuario = jwtUtil.getKey(token);
+            if (nombreUsuario == null)
+                return new Response<Producto>("token no valido", false, null);
+
+            if (productoDetail == null) {
+                return response = new Response<Producto>("Los datos son nulos", false, productoDetail);
             }
-    
-            if(!productoRepository.findById(producto.getId()).isPresent()) {
-                return response = new Response<Producto>("El producto no se encuentra registrado", false, producto);
+
+            var producto = productoRepository.findById(id);
+            if (!producto.isPresent()) {
+                return response = new Response<Producto>("El producto no se encuentra registrado", false,
+                        productoDetail);
             }
-    
-            return response = new Response<Producto>("Producto actualizado", true, productoRepository.save(producto));
+
+            producto.get().setIva(productoDetail.getIva());
+            producto.get().setDescripcion(productoDetail.getDescripcion());
+            producto.get().setPrecioUnitario(productoDetail.getPrecioUnitario());
+
+            return response = new Response<Producto>("Producto actualizado", true,
+                    productoRepository.save(producto.get()));
         } catch (Exception e) {
-            return response = new Response<Producto>(e.getMessage(), true, producto);
+            return response = new Response<Producto>(e.getMessage(), true, productoDetail);
         }
-        
+
     }
 
     @Override
-    public Response<Optional<Producto>> deleteById(int id) {
+    public Response<Optional<Producto>> deleteById(int id, String token) {
         try {
+            String nombreUsuario = jwtUtil.getKey(token);
+            if(nombreUsuario == null) return new Response<Optional<Producto>>("token no valido", false, null);
+
             Optional<Producto> producto = productoRepository.findById(id);
 
-            if(!producto.isPresent()) return new Response<Optional<Producto>>("Producto no encontrado",false,producto);
-            
+            if (!producto.isPresent())
+                return new Response<Optional<Producto>>("Producto no encontrado", false, producto);
+
             productoRepository.deleteById(id);
-            return new Response<Optional<Producto>>("Producto eliminado",false,producto);
+            return new Response<Optional<Producto>>("Producto eliminado", true, producto);
         } catch (Exception e) {
-            return new Response<Optional<Producto>>(e.getMessage(),false,null);
+            return new Response<Optional<Producto>>(e.getMessage(), false, null);
         }
     }
-    
+
 }

@@ -8,14 +8,14 @@ import com.juandevs.prue11.request.Response;
 
 public interface IClienteService {
     
-    public Response<Iterable<Cliente>> findAll();
+    public Response<Iterable<Cliente>> findAll(String token);
 
-    public Response<Optional<Cliente>> findById(String id);
+    public Response<Optional<Cliente>> findById(String id, String token);
 
-    public Response<Cliente> save(Cliente cliente);
+    public Response<Cliente> save(Cliente cliente, String token);
 
-    public Response<Optional<Cliente>> deleteById(String id);
+    public Response<Optional<Cliente>> deleteById(String id,String token);
     
-    public Response<Cliente> update(Cliente cliente);
+    public Response<Cliente> update(Cliente cliente, String id, String token);
 
 }

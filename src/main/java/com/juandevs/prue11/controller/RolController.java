@@ -1,5 +1,7 @@
 package com.juandevs.prue11.controller;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,57 +16,67 @@ import org.springframework.web.bind.annotation.RestController;
 import com.juandevs.prue11.entity.Rol;
 import com.juandevs.prue11.request.Response;
 import com.juandevs.prue11.service.RolServiceImpl;
-import com.juandevs.prue11.security.JWTUtil;
+
+
 @RestController
 @RequestMapping("/api/rol")
-@CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT,
-    RequestMethod.DELETE})
+@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT,
+        RequestMethod.DELETE })
 public class RolController {
 
     @Autowired
     private RolServiceImpl rolService;
 
-    @Autowired
-    private JWTUtil jwtUtil;
 
     @RequestMapping(value = "/save", method = RequestMethod.POST)
-    public ResponseEntity<?> save(@RequestBody Rol rol,@RequestHeader(value = "Authorization") String token){
-        String nombreUsuario = jwtUtil.getKey(token);
-        if(nombreUsuario == null) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response("token no valido", false, token));
+    public ResponseEntity<?> save(@RequestBody Rol rol, @RequestHeader(value = "Authorization") String token) {
 
-        return ResponseEntity.status(HttpStatus.OK).body(rolService.save(rol));
+        Response<Rol> response = rolService.save(rol, token);
+        if (!response.isStatus())
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @RequestMapping(value = "/findAll", method = RequestMethod.GET)
     public ResponseEntity<?> findAll(@RequestHeader(value = "Authorization") String token) {
-        String nombreUsuario = jwtUtil.getKey(token);
-        if(nombreUsuario == null) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response("token no valido", false, token));
 
-        return ResponseEntity.status(HttpStatus.OK).body(rolService.findAll());
+        Response<Iterable<Rol>> response = rolService.findAll(token);
+        if (!response.isStatus())
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @RequestMapping(value = "/findById/{id}", method = RequestMethod.GET)
-    public ResponseEntity<?> findById(@PathVariable int id,@RequestHeader(value = "Authorization") String token) {
-        String nombreUsuario = jwtUtil.getKey(token);
-        if(nombreUsuario == null) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response("token no valido", false, token));
+    public ResponseEntity<?> findById(@PathVariable int id, @RequestHeader(value = "Authorization") String token) {
 
-        return ResponseEntity.status(HttpStatus.OK).body(rolService.findById(id));
+        Response<Optional<Rol>> response = rolService.findById(id, token);
+        if (!response.isStatus())
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @RequestMapping(value = "/update/{id}", method = RequestMethod.PUT)
-    public ResponseEntity<?> update(@RequestBody Rol rolDetail, @PathVariable int id,@RequestHeader(value = "Authorization") String token){   
-        String nombreUsuario = jwtUtil.getKey(token);
-        if(nombreUsuario == null) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response("token no valido", false, token));
+    public ResponseEntity<?> update(@RequestBody Rol rolDetail, @PathVariable int id,
+            @RequestHeader(value = "Authorization") String token) {
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(rolService.update(rolDetail, id));
+        Response<Rol> response = rolService.update(rolDetail, id, token);
+        if (!response.isStatus())
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.DELETE)
-    public ResponseEntity<?> delete(@PathVariable int id,@RequestHeader(value = "Authorization") String token){
-        String nombreUsuario = jwtUtil.getKey(token);
-        if(nombreUsuario == null) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response("token no valido", false, token));
+    public ResponseEntity<?> delete(@PathVariable int id, @RequestHeader(value = "Authorization") String token) {
 
-        return ResponseEntity.status(HttpStatus.OK).body(rolService.deleteById(id));
+        Response<Optional<Rol>> response = rolService.deleteById(id, token);
+        if (!response.isStatus())
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
-    
+
 }

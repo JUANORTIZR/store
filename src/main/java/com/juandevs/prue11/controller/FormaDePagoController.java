@@ -1,5 +1,6 @@
 package com.juandevs.prue11.controller;
 
+import java.util.Iterator;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.juandevs.prue11.entity.FormasDePago;
 import com.juandevs.prue11.request.Response;
 import com.juandevs.prue11.service.FormaDePagoServiceImpl;
-import com.juandevs.prue11.security.JWTUtil;
+
 
 @RestController
 
@@ -28,58 +29,53 @@ public class FormaDePagoController {
     
     @Autowired
     private FormaDePagoServiceImpl formaDePagoService;
-    @Autowired
-    private JWTUtil jwtUtil;
+  
 
     @RequestMapping(value = "/findAll", method = RequestMethod.GET)
     public ResponseEntity<?> findAll(@RequestHeader(value = "Authorization") String token) {
+      
+        Response<Iterable<FormasDePago>> response = formaDePagoService.findAll(token);
+        if(!response.isStatus()) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 
-        String nombreUsuario = jwtUtil.getKey(token);
-        if(nombreUsuario == null) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response("token no valido", false, token));
-
-
-        return ResponseEntity.status(HttpStatus.OK).body(formaDePagoService.findAll());
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
 
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     public ResponseEntity<?> save(@RequestBody FormasDePago formaDePago,@RequestHeader(value = "Authorization") String token) {
-        String nombreUsuario = jwtUtil.getKey(token);
-        if(nombreUsuario == null) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response("token no valido", false, token));
+        
+        Response<FormasDePago> response = formaDePagoService.save(formaDePago, token);
+        if(!response.isStatus()) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 
-        return  ResponseEntity.status(HttpStatus.CREATED).body(formaDePagoService.save(formaDePago));
+        return  ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
 
     @RequestMapping(value = "/findById/{id}", method = RequestMethod.GET)
     public ResponseEntity<?> findById(@PathVariable int id,@RequestHeader(value = "Authorization") String token) {
-        String nombreUsuario = jwtUtil.getKey(token);
-        if(nombreUsuario == null) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response("token no valido", false, token));
+        
+        Response<Optional<FormasDePago>> response = formaDePagoService.findById(id, token);
+        if(!response.isStatus()) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 
-        return ResponseEntity.status(HttpStatus.OK).body(formaDePagoService.findById(id));
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @RequestMapping(value = "/update/{id}", method = RequestMethod.PUT)
-    public ResponseEntity<?> update(@RequestBody FormasDePago formaDetail, @PathVariable int id,@RequestHeader(value = "Authorization") String token){
-      
-        String nombreUsuario = jwtUtil.getKey(token);
-        if(nombreUsuario == null) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response("token no valido", false, token));
-      
-        Optional<FormasDePago> formaDePago = formaDePagoService.findById(id).getObject();
-
-        if(!formaDePago.isPresent()) return ResponseEntity.notFound().build();
-    
-        formaDePago.get().setFormaDePago(formaDetail.getFormaDePago());
+    public ResponseEntity<?> update(@RequestBody FormasDePago formaDetail, @PathVariable int id,@RequestHeader(value = "Authorization") String token){     
         
-        return ResponseEntity.status(HttpStatus.CREATED).body(formaDePagoService.update(formaDePago.get()));
+        Response<FormasDePago> response = formaDePagoService.update(formaDetail, id, token);
+        if(!response.isStatus()) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.DELETE)
     public ResponseEntity<?> delete(@PathVariable int id,@RequestHeader(value = "Authorization") String token){
-        String nombreUsuario = jwtUtil.getKey(token);
-        if(nombreUsuario == null) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response("token no valido", false, token));
+        
+        Response<Optional<FormasDePago>> response = formaDePagoService.deleteById(id, token);
+        if(response.isStatus()) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 
-        return ResponseEntity.status(HttpStatus.OK).body(formaDePagoService.deleteById(id));
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
 
