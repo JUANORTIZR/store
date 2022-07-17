@@ -34,44 +34,53 @@ public class FacturaController {
 
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     public ResponseEntity<?> save(@RequestBody Factura factura, @RequestHeader(value = "Authorization") String token) {
-        String nombreUsuario = jwtUtil.getKey(token);
-        if (nombreUsuario == null)
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response("token no valido", false, token));
-        Response<Factura> response = facturaService.save(factura);
-        if(!response.isStatus()) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);    
+
+        Response<Factura> response = facturaService.save(factura, token);
+        if (!response.isStatus())
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @RequestMapping(value = "/findAll", method = RequestMethod.GET)
     public ResponseEntity<?> findAll(@RequestHeader(value = "Authorization") String token) {
-        String nombreUsuario = jwtUtil.getKey(token);
-        if(nombreUsuario == null) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response("token no valido", false, token));
-        Response<Iterable<Factura>> response = facturaService.findAll();
+
+        Response<Iterable<Factura>> response = facturaService.findAll(token);
+        if (!response.isStatus())
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @RequestMapping(value = "/findByCliente", method = RequestMethod.GET)
-    public ResponseEntity<?> findByCliente(@PathVariable String id,@RequestHeader(value = "Authorization") String token) {
-        String nombreUsuario = jwtUtil.getKey(token);
-        if(nombreUsuario == null) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response("token no valido", false, token));
+    public ResponseEntity<?> findByCliente(@PathVariable String id,
+            @RequestHeader(value = "Authorization") String token) {
 
-        return ResponseEntity.status(HttpStatus.OK).body(facturaService.findByIdCliente(id));
+        Response<Iterable<Factura>> response = facturaService.findByIdCliente(id, token);
+        if (!response.isStatus())
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @RequestMapping(value = "/findById/{id}", method = RequestMethod.GET)
     public ResponseEntity<?> findById(@PathVariable int id, @RequestHeader(value = "Authorization") String token) {
-        String nombreUsuario = jwtUtil.getKey(token);
-        if(nombreUsuario == null) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response("token no valido", false, token));
 
-        return ResponseEntity.status(HttpStatus.OK).body(facturaService.findById(id));
+        Response<Optional<Factura>> response = facturaService.findById(id, token);
+        if (!response.isStatus())
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @RequestMapping(value = "/update/{id}", method = RequestMethod.PUT)
-    public ResponseEntity<?> update(@RequestBody Factura facturaDetail, @PathVariable int id,@RequestHeader(value = "Authorization") String token) {
-        String nombreUsuario = jwtUtil.getKey(token);
-        if(nombreUsuario == null) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response("token no valido", false, token));
-        Response<Optional<Factura>> factura = facturaService.findById(id);
-        factura.getObject().get().setEstado(facturaDetail.getEstado());
-        return ResponseEntity.status(HttpStatus.OK).body(facturaService.update(factura.getObject().get()));
+    public ResponseEntity<?> update(@RequestBody Factura facturaDetail, @PathVariable int id,
+            @RequestHeader(value = "Authorization") String token) {
+
+        Response<Factura> response = facturaService.update(facturaDetail, id, token);
+        if (!response.isStatus())
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }

@@ -48,7 +48,7 @@ public class ClienteServiceImpl implements IClienteService {
             if (!cliente.isPresent())
                 return new Response<Optional<Cliente>>("Cliente no encontrado", false, cliente);
 
-            return new Response<Optional<Cliente>>("Cliente encontrado", false, cliente);
+            return new Response<Optional<Cliente>>("Cliente encontrado", true, cliente);
         } catch (Exception e) {
             return new Response<Optional<Cliente>>(e.getMessage(), false, null);
         }
